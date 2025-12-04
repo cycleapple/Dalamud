@@ -1,6 +1,7 @@
 [submodule "lib/FFXIVClientStructs"]
 	path = lib/FFXIVClientStructs
-	url = https://github.com/aers/FFXIVClientStructs
+	url = https://github.com/cycleapple/FFXIVClientStructs
+	branch = tw-client
 [submodule "lib/Nomade040-nmd"]
 	path = lib/Nomade040-nmd
 	url = https://github.com/Nomade040/nmd.git
