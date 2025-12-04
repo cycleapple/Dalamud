@@ -20,6 +20,7 @@ public static class ClientLanguageExtensions
             ClientLanguage.English => Lumina.Data.Language.English,
             ClientLanguage.German => Lumina.Data.Language.German,
             ClientLanguage.French => Lumina.Data.Language.French,
+            ClientLanguage.ChineseTraditional => Lumina.Data.Language.ChineseTraditional,
             _ => throw new ArgumentOutOfRangeException(nameof(language)),
         };
     }
@@ -28,7 +29,7 @@ public static class ClientLanguageExtensions
     /// Gets the language code from a ClientLanguage.
     /// </summary>
     /// <param name="value">The ClientLanguage to convert.</param>
-    /// <returns>The language code (ja, en, de, fr).</returns>
+    /// <returns>The language code (ja, en, de, fr, chs).</returns>
     /// <exception cref="ArgumentOutOfRangeException">An exception that is thrown when no valid ClientLanguage was given.</exception>
     public static string ToCode(this ClientLanguage value)
     {
@@ -38,6 +39,7 @@ public static class ClientLanguageExtensions
             ClientLanguage.English => "en",
             ClientLanguage.German => "de",
             ClientLanguage.French => "fr",
+            ClientLanguage.ChineseTraditional => "cht",
             _ => throw new ArgumentOutOfRangeException(nameof(value)),
         };
     }
@@ -45,7 +47,7 @@ public static class ClientLanguageExtensions
     /// <summary>
     /// Gets the ClientLanguage from a language code.
     /// </summary>
-    /// <param name="value">The language code to convert (ja, en, de, fr).</param>
+    /// <param name="value">The language code to convert (ja, en, de, fr, cht).</param>
     /// <returns>The ClientLanguage.</returns>
     /// <exception cref="ArgumentOutOfRangeException">An exception that is thrown when no valid language code was given.</exception>
     public static ClientLanguage ToClientLanguage(this string value)
@@ -56,6 +58,7 @@ public static class ClientLanguageExtensions
             "en" => ClientLanguage.English,
             "de" => ClientLanguage.German,
             "fr" => ClientLanguage.French,
+            "cht" => ClientLanguage.ChineseTraditional,
             _ => throw new ArgumentOutOfRangeException(nameof(value)),
         };
     }

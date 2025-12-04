@@ -11,6 +11,7 @@ using Dalamud.Utility.Timing;
 using Lumina;
 using Lumina.Data;
 using Lumina.Excel;
+using Lumina.Excel.Exceptions;
 
 using Newtonsoft.Json;
 using Serilog;
@@ -48,9 +49,9 @@ internal sealed class DataManager : IInternalDisposableService, IDataManager
                 {
                     LoadMultithreaded = true,
                     CacheFileResources = true,
-                    PanicOnSheetChecksumMismatch = true,
+                    PanicOnSheetChecksumMismatch = false, // TW client has different sheet structure
                     RsvResolver = this.rsvResolver.TryResolve,
-                    DefaultExcelLanguage = this.Language.ToLumina(),
+                    DefaultExcelLanguage = Lumina.Data.Language.ChineseTraditional, // TW client uses _cht suffix for Excel sheets
                 };
 
                 try
@@ -142,13 +143,106 @@ internal sealed class DataManager : IInternalDisposableService, IDataManager
 
     #region Lumina Wrappers
 
+    // Language fallback order for TW client
+    private static readonly Lumina.Data.Language[] LanguageFallbacks =
+    [
+        Lumina.Data.Language.ChineseTraditional2, // _tc suffix (TW client)
+        Lumina.Data.Language.ChineseTraditional,  // _cht suffix
+        Lumina.Data.Language.None,                // base sheet (no suffix)
+        Lumina.Data.Language.English,             // _en suffix
+        Lumina.Data.Language.Japanese,            // _ja suffix
+        Lumina.Data.Language.ChineseSimplified,   // _chs suffix
+    ];
+
     /// <inheritdoc/>
     public ExcelSheet<T> GetExcelSheet<T>(ClientLanguage? language = null, string? name = null) where T : struct, IExcelRow<T>
-        => this.Excel.GetSheet<T>(language?.ToLumina(), name);
+    {
+        // TW client: try requested language first, then fall back through alternatives
+        var requestedLang = language?.ToLumina();
+
+        // If explicit language requested, try it first
+        if (requestedLang != null)
+        {
+            try
+            {
+                return this.Excel.GetSheet<T>(requestedLang, name);
+            }
+            catch (UnsupportedLanguageException)
+            {
+                Log.Warning("Language {Lang} not supported for sheet {Name}, trying fallbacks", requestedLang, typeof(T).Name);
+            }
+        }
+
+        // Try fallback languages
+        Exception? lastException = null;
+        foreach (var fallbackLang in LanguageFallbacks)
+        {
+            try
+            {
+                return this.Excel.GetSheet<T>(fallbackLang, name);
+            }
+            catch (UnsupportedLanguageException ex)
+            {
+                lastException = ex;
+                // Continue to next fallback
+            }
+        }
+
+        // Last resort - try with null (let Lumina pick default) then throw if still fails
+        try
+        {
+            return this.Excel.GetSheet<T>(null, name);
+        }
+        catch (UnsupportedLanguageException)
+        {
+            Log.Error("All language fallbacks failed for sheet {Name}. Tried: ChineseTraditional2, ChineseTraditional, None, English, Japanese, ChineseSimplified, null", typeof(T).Name);
+            throw;
+        }
+    }
 
     /// <inheritdoc/>
     public SubrowExcelSheet<T> GetSubrowExcelSheet<T>(ClientLanguage? language = null, string? name = null) where T : struct, IExcelSubrow<T>
-        => this.Excel.GetSubrowSheet<T>(language?.ToLumina(), name);
+    {
+        // TW client: try requested language first, then fall back through alternatives
+        var requestedLang = language?.ToLumina();
+
+        // If explicit language requested, try it first
+        if (requestedLang != null)
+        {
+            try
+            {
+                return this.Excel.GetSubrowSheet<T>(requestedLang, name);
+            }
+            catch (UnsupportedLanguageException)
+            {
+                Log.Warning("Language {Lang} not supported for subrow sheet {Name}, trying fallbacks", requestedLang, typeof(T).Name);
+            }
+        }
+
+        // Try fallback languages
+        foreach (var fallbackLang in LanguageFallbacks)
+        {
+            try
+            {
+                return this.Excel.GetSubrowSheet<T>(fallbackLang, name);
+            }
+            catch (UnsupportedLanguageException)
+            {
+                // Continue to next fallback
+            }
+        }
+
+        // Last resort - try with null (let Lumina pick default) then throw if still fails
+        try
+        {
+            return this.Excel.GetSubrowSheet<T>(null, name);
+        }
+        catch (UnsupportedLanguageException)
+        {
+            Log.Error("All language fallbacks failed for subrow sheet {Name}. Tried: ChineseTraditional2, ChineseTraditional, None, English, Japanese, ChineseSimplified, null", typeof(T).Name);
+            throw;
+        }
+    }
 
     /// <inheritdoc/>
     public FileResource? GetFile(string path)
