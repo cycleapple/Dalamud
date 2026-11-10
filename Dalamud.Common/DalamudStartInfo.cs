@@ -63,10 +63,9 @@ public record DalamudStartInfo
     /// <summary>
     /// Gets or sets the language of the game client.
     /// </summary>
-    public ClientLanguage Language => DefaultLanguage;
+    public ClientLanguage Language { get; set; } = DefaultLanguage;
     
-    // REGION TODO: 非国际服需要更新此处的默认 Excel 语言
-    public const ClientLanguage DefaultLanguage = ClientLanguage.ChineseSimplified;
+    public const ClientLanguage DefaultLanguage = ClientLanguage.TraditionalChinese;
 
     /// <summary>
     /// Gets or sets the underlying platform�Dalamud runs on.

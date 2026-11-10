@@ -24,6 +24,22 @@ jobs:
           @($env:GITHUB_REPOSITORY, $env:GITHUB_REF_NAME, $env:GITHUB_SHA.Substring(0, 7), 'api14-tw-verification') | Set-Content VERSION
       - name: Build and test
         run: .\build.ps1 ci --configuration Release
+      - name: Verify host assembly versions
+        shell: pwsh
+        run: |
+          $expected = @{
+            Dalamud = '14.0.5.1'
+            FFXIVClientStructs = '0.0.7751.0'
+            Lumina = '7.0.0.0'
+            'Lumina.Excel' = '7.0.0.0'
+          }
+          foreach ($entry in $expected.GetEnumerator()) {
+            $assembly = Resolve-Path "bin/Release/$($entry.Key).dll"
+            $actual = [Reflection.AssemblyName]::GetAssemblyName($assembly.Path).Version
+            if ($actual -ne [version]$entry.Value) {
+              throw "$($entry.Key) assembly version is $actual, expected $($entry.Value)"
+            }
+          }
       - uses: actions/upload-artifact@v4
         with:
           name: dalamud-api14-tw

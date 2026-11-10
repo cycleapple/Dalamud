@@ -1,0 +1,11 @@
+<Project>
+    <!-- Keep the host identities stable across local and shallow CI clones. -->
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'FFXIVClientStructs'">
+        <AssemblyVersion>0.0.7751.0</AssemblyVersion>
+    </PropertyGroup>
+    <PropertyGroup Condition="'$(MSBuildProjectName)' == 'Lumina' Or '$(MSBuildProjectName)' == 'Lumina.Excel'">
+        <MinVerSkip>true</MinVerSkip>
+        <Version>7.0.0</Version>
+        <AssemblyVersion>7.0.0.0</AssemblyVersion>
+    </PropertyGroup>
+</Project>

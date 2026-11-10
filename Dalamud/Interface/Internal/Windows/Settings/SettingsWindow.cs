@@ -102,7 +102,7 @@ internal sealed class SettingsWindow : Window
         }
 
         localization.LocalizationChanged += this.OnLocalizationChanged;
-        
+
         base.OnOpen();
     }
 

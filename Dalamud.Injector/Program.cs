@@ -329,7 +329,11 @@ namespace Dalamud.Injector
                 }
                 else if (args[i].StartsWith(key = "--dalamud-client-language="))
                 {
-                    languageStr = args[i][key.Length..].ToLowerInvariant();
+                    var requestedLanguage = args[i][key.Length..];
+                    // Existing XIVTCLauncher builds pass 4 for the Taiwan client.
+                    languageStr = requestedLanguage == "4"
+                                      ? nameof(ClientLanguage.TraditionalChinese).ToLowerInvariant()
+                                      : requestedLanguage.ToLowerInvariant();
                 }
                 else if (args[i].StartsWith(key = "--dalamud-platform="))
                 {
@@ -468,6 +472,7 @@ namespace Dalamud.Injector
             startInfo.PluginDirectory = pluginDirectory;
             startInfo.AssetDirectory = assetDirectory;
             startInfo.TempDirectory = tempDirectory;
+            startInfo.Language = clientLanguage;
             startInfo.Platform = platform;
             startInfo.DelayInitializeMs = delayInitializeMs;
             startInfo.GameVersion = null;
