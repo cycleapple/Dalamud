@@ -1,0 +1,31 @@
+name: API 14 Taiwan build verification
+
+on:
+  push:
+    branches: [api14-tw-yanmucorp]
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: windows-2022
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 10.0.x
+      - uses: microsoft/setup-msbuild@v2
+      - name: Set build identity
+        shell: pwsh
+        run: |
+          @($env:GITHUB_REPOSITORY, $env:GITHUB_REF_NAME, $env:GITHUB_SHA.Substring(0, 7), 'api14-tw-verification') | Set-Content VERSION
+      - name: Build and test
+        run: .\build.ps1 ci --configuration Release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dalamud-api14-tw
+          path: bin/Release/
+          if-no-files-found: error
