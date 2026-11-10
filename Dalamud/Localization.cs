@@ -18,8 +18,7 @@ public class Localization : IServiceType
     /// <summary>
     /// Array of language codes which have a valid translation in Dalamud.
     /// </summary>
-    // REGION TODO: 国服
-    public static readonly string[] ApplicableLangCodes = ["zh"];
+    public static readonly string[] ApplicableLangCodes = ["de", "ja", "fr", "it", "es", "ko", "no", "ru", "zh", "tw"];
 
     private const string FallbackLangCode = "en";
 
@@ -64,9 +63,24 @@ public class Localization : IServiceType
     /// </summary>
     /// <param name="langCode">The language code which should be in <see cref="ApplicableLangCodes"/>.</param>
     /// <returns>The corresponding instance of <see cref="CultureInfo"/>.</returns>
-    // REGION TODO: 国服
-    public static CultureInfo GetCultureInfoFromLangCode(string langCode) =>
-        CultureInfo.GetCultureInfo("zh-hans");
+    public static CultureInfo GetCultureInfoFromLangCode(string langCode)
+    {
+        var cultureName = langCode.ToLowerInvariant() switch
+        {
+            "tw" or "tc" => "zh-hant",
+            "zh" => "zh-hans",
+            _ => langCode,
+        };
+
+        try
+        {
+            return CultureInfo.GetCultureInfo(cultureName);
+        }
+        catch (CultureNotFoundException)
+        {
+            return CultureInfo.InvariantCulture;
+        }
+    }
 
     /// <summary>
     /// Search the set-up localization data for the provided assembly for the given string key and return it.
@@ -89,17 +103,9 @@ public class Localization : IServiceType
     {
         try
         {
-            var currentUiLang = CultureInfo.CurrentUICulture;
-            Log.Information("Trying to set up Loc for culture {0}", currentUiLang.TwoLetterISOLanguageName);
-
-            if (ApplicableLangCodes.Any(langCode => currentUiLang.TwoLetterISOLanguageName == langCode))
-            {
-                this.SetupWithLangCode(currentUiLang.TwoLetterISOLanguageName);
-            }
-            else
-            {
-                this.SetupWithFallbacks();
-            }
+            var culture = CultureInfo.CurrentUICulture;
+            Log.Information("Trying to set up Loc for culture {0}", culture.Name);
+            this.SetupWithLangCode(GetUiLanguage(culture));
         }
         catch (Exception ex)
         {
@@ -181,15 +187,37 @@ public class Localization : IServiceType
     /// </summary>
     /// <param name="assetDirectory">Path to Dalamud assets.</param>
     /// <param name="languageOverride">Optional language override.</param>
+    /// <param name="clientLanguage">Language of the game client.</param>
     /// <returns>A new instance.</returns>
-    internal static Localization FromAssets(string assetDirectory, string? languageOverride)
+    internal static Localization FromAssets(string assetDirectory, string? languageOverride, Common.ClientLanguage clientLanguage)
     {
         var t = new Localization(Path.Combine(assetDirectory, "UIRes", "loc", "dalamud"), "dalamud_");
-        if (!string.IsNullOrEmpty(languageOverride))
-            t.SetupWithLangCode(languageOverride);
+        var language = ResolveAssetLanguage(languageOverride, clientLanguage);
+        if (language != null)
+            t.SetupWithLangCode(language);
         else
             t.SetupWithUiCulture();
         return t;
+    }
+
+    internal static string? ResolveAssetLanguage(string? languageOverride, Common.ClientLanguage clientLanguage)
+    {
+        if (!string.IsNullOrEmpty(languageOverride))
+            return languageOverride.Equals("tc", StringComparison.OrdinalIgnoreCase) ? "tw" : languageOverride;
+
+        return clientLanguage == Common.ClientLanguage.TraditionalChinese ? "tw" : null;
+    }
+
+    internal static string GetUiLanguage(CultureInfo culture)
+    {
+        for (var parent = culture; parent.Name.Length != 0; parent = parent.Parent)
+        {
+            if (parent.Name.Equals("zh-Hant", StringComparison.OrdinalIgnoreCase))
+                return "tw";
+        }
+
+        var language = culture.TwoLetterISOLanguageName;
+        return ApplicableLangCodes.Contains(language) ? language : FallbackLangCode;
     }
 
     private string ReadLocData(string langCode)

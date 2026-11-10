@@ -52,6 +52,7 @@ internal sealed unsafe class Dalamud : IServiceType
     public Dalamud(DalamudStartInfo info, ReliableFileStorage fs, DalamudConfiguration configuration, IntPtr mainThreadContinueEvent)
     {
         this.StartInfo = info;
+        configuration.ClientLanguage = info.Language;
 
         this.unloadSignal = new ManualResetEvent(false);
         this.unloadSignal.Reset();
@@ -74,7 +75,7 @@ internal sealed unsafe class Dalamud : IServiceType
             fs,
             configuration,
             scanner,
-            Localization.FromAssets(info.AssetDirectory!, configuration.LanguageOverride));
+            Localization.FromAssets(info.AssetDirectory!, configuration.LanguageOverride, info.Language));
 
         using (Timings.Start("HookVerifier Init"))
         {
