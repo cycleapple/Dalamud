@@ -125,7 +125,11 @@ static DalamudExpected<void> append_injector_launch_args(std::vector<std::wstrin
     args.emplace_back(L"--dalamud-plugin-directory=\"" + unicode::convert<std::wstring>(g_startInfo.PluginDirectory) + L"\"");
     args.emplace_back(L"--dalamud-asset-directory=\"" + unicode::convert<std::wstring>(g_startInfo.AssetDirectory) + L"\"");
     args.emplace_back(L"--dalamud-temp-directory=\"" + unicode::convert<std::wstring>(g_startInfo.TempDirectory) + L"\"");
-    args.emplace_back(std::format(L"--dalamud-client-language={}", static_cast<int>(g_startInfo.Language)));
+    // Numeric 4 is reserved for older Taiwan launchers by the managed argument parser.
+    if (g_startInfo.Language == DalamudStartInfo::ClientLanguage::ChineseSimplified)
+        args.emplace_back(L"--dalamud-client-language=chinesesimplified");
+    else
+        args.emplace_back(std::format(L"--dalamud-client-language={}", static_cast<int>(g_startInfo.Language)));
     args.emplace_back(std::format(L"--dalamud-delay-initialize={}", g_startInfo.DelayInitializeMs));
     // NoLoadPlugins/NoLoadThirdPartyPlugins: supplied from DalamudCrashHandler
 
