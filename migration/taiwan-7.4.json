@@ -1,0 +1,241 @@
+{
+  "purpose": "Preparation for the Taiwan 7.4 client using the historical CN7.3 -> TW7.3 route and the CN7.4 candidate.",
+  "coreBaselines": {
+    "china73": "b358b86dd412599980783e579fab1382a67008a3",
+    "taiwan73RegionalMerge": "642b1015eda06a129041451584e864d529cbfbf7",
+    "taiwan73PreJulyRefresh": "abf0adbd01926f15e01094efdd72766e91167270",
+    "taiwan73LatestRelease": "eed420e2d1170a0804e5c6ae6f75f56cef31e0d9",
+    "china74Candidate": "43ec2530e213c8c4fe946959e6857d4b9b0bd271",
+    "pluginApiReference": "5d089699d1391a2c7888af01470edee21d22ffde"
+  },
+  "clientStructsBaselines": {
+    "china73": "790872a8e2a7848fabb70f0a1266aa8ca97226d2",
+    "taiwan73Initial": "00bceabf4b5ee4d4fec767b3af9c64bcaa6cb34b",
+    "sharedUpstreamBeforeLatestTaiwan73": "60fcc600159d861c8422c852b07c00e1cbd5e52e",
+    "taiwan73Latest": "e95eb0de74e54be840b15097ef65b6b252ba3c6f",
+    "china74Candidate": "aa6f79de51878992cee19074068def1976531870"
+  },
+  "scopeNotes": [
+    "Historical branch names identify the source route; they do not establish the patch identity of an unavailable Taiwan7.4 binary.",
+    "The initial Taiwan73 native patch changed five signatures plus a developer-local resolver path; after shared upstream merges only three native signature overrides remain.",
+    "The previously reported four struct-layout differences compare the CN7.4 candidate with international API14 plugin references. They are a separate comparison.",
+    "Native signatures, field offsets, sheet content and hooks require verification against the actual Taiwan7.4 client."
+  ],
+  "coreDeltaPaths": [
+    ".gitmodules",
+    "Dalamud.Common/ClientLanguage.cs",
+    "Dalamud.Common/DalamudStartInfo.cs",
+    "Dalamud.Injector/EntryPoint.cs",
+    "Dalamud/Configuration/Internal/DalamudConfiguration.cs",
+    "Dalamud/Data/DataManager.cs",
+    "Dalamud/Game/ClientLanguage.cs",
+    "Dalamud/Game/Network/Internal/NetworkHandlers.cs",
+    "Dalamud/Game/Text/Sanitizer/Sanitizer.cs",
+    "Dalamud/Interface/GameFonts/GameFontFamilyAndSize.cs",
+    "Dalamud/Interface/ImGuiNotification/Internal/NotificationPositionChooser.cs",
+    "Dalamud/Interface/Internal/Asserts/AssertHandler.cs",
+    "Dalamud/Interface/Internal/DalamudCommands.cs",
+    "Dalamud/Interface/Internal/DalamudInterface.cs",
+    "Dalamud/Interface/Internal/InterfaceManager.cs",
+    "Dalamud/Interface/Internal/PluginCategoryManager.cs",
+    "Dalamud/Interface/Internal/Windows/ChangelogWindow.cs",
+    "Dalamud/Interface/Internal/Windows/ConsoleWindow.cs",
+    "Dalamud/Interface/Internal/Windows/PluginInstaller/PluginInstallerWindow.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/SettingsWindow.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabAutoUpdate.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabExperimental.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabGeneral.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabLook.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Widgets/DevPluginsSettingsEntry.cs",
+    "Dalamud/Interface/Internal/Windows/Settings/Widgets/ProxySettingsEntry.cs",
+    "Dalamud/Localization.cs",
+    "Dalamud/Plugin/Internal/PluginErrorHandler.cs",
+    "Dalamud/Plugin/Internal/PluginManager.cs",
+    "Dalamud/Plugin/Internal/Types/PluginRepository.cs",
+    "Dalamud/Utility/ClientLanguageExtensions.cs",
+    "Dalamud/Utility/Util.cs",
+    "lib/CoreCLR/boot.cpp",
+    "lib/FFXIVClientStructs",
+    "lib/Lumina"
+  ],
+  "native73Overrides": [
+    {
+      "symbol": "ActionManager.GetRecastTime",
+      "path": "FFXIVClientStructs/FFXIV/Client/Game/ActionManager.cs",
+      "china73": "[MemberFunction(\"E8 ?? ?? ?? ?? 83 7F 54 01\")]\npublic partial float GetRecastTime(ActionType actionType, uint actionId);",
+      "taiwan73Initial": "[MemberFunction(\"40 53 48 83 EC ?? 0F B6 D2 48 8B D9 E8 ?? ?? ?? ?? 8B D0 48 8B CB E8 ?? ?? ?? ?? 48 8B D8\")]\npublic partial float GetRecastTime(ActionType actionType, uint actionId);",
+      "taiwan73Release": "[MemberFunction(\"40 53 48 83 EC ?? 0F B6 D2 48 8B D9 E8 ?? ?? ?? ?? 8B D0 48 8B CB E8 ?? ?? ?? ?? 48 8B D8\")]\npublic partial float GetRecastTime(ActionType actionType, uint actionId);",
+      "china74Candidate": "[MemberFunction(\"E8 ?? ?? ?? ?? 83 7F 58 01\")]\npublic partial float GetRecastTime(ActionType actionType, uint actionId);",
+      "retainedInLatestTaiwan73Delta": true,
+      "status": "awaiting-taiwan74-binary",
+      "action": "Scan the actual Taiwan 7.4 binary and verify function/virtual-table identity before changing the candidate signature."
+    },
+    {
+      "symbol": "AgentActionDetail.VirtualTable",
+      "path": "FFXIVClientStructs/FFXIV/Client/UI/Agent/AgentActionDetail.cs",
+      "china73": "[VirtualTable(\"83 79 5C 00 48 8D 05 ?? ?? ?? ?? 48 89 01 8B FA\", 7)]",
+      "taiwan73Initial": "[VirtualTable(\"48 8D 05 ?? ?? ?? ?? 48 89 03 33 C0 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 89 43\", 3)]",
+      "taiwan73Release": "[VirtualTable(\"48 8D 05 ?? ?? ?? ?? 48 89 03 33 C0 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 48 89 43 ?? 89 43\", 3)]",
+      "china74Candidate": "[VirtualTable(\"48 8D 05 ?? ?? ?? ?? 48 89 01 8B FA 48 8B D9 74 ?? 0F B6 41\", 3)]",
+      "retainedInLatestTaiwan73Delta": true,
+      "status": "awaiting-taiwan74-binary",
+      "action": "Scan the actual Taiwan 7.4 binary and verify function/virtual-table identity before changing the candidate signature."
+    },
+    {
+      "symbol": "CharaSelectCharacterEntry.IsInDifferentRegion",
+      "path": "FFXIVClientStructs/FFXIV/Client/UI/Agent/AgentLobby.cs",
+      "china73": "[MemberFunction(\"E8 ?? ?? ?? ?? 84 C0 75 56 49 8B CC\")]\npublic partial bool IsInDifferentRegion();",
+      "taiwan73Initial": "[MemberFunction(\"48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 48 8B F9 E8 ?? ?? ?? ?? 84 C0 0F 84\")]\npublic partial bool IsInDifferentRegion();",
+      "taiwan73Release": "[MemberFunction(\"48 89 5C 24 ?? 48 89 74 24 ?? 57 48 83 EC ?? 48 8B F9 E8 ?? ?? ?? ?? 84 C0 0F 84\")]\npublic partial bool IsInDifferentRegion();",
+      "china74Candidate": "[MemberFunction(\"E8 ?? ?? ?? ?? 84 C0 0F 85 ?? ?? ?? ?? 49 8B CD\")]\npublic partial bool IsInDifferentRegion();",
+      "retainedInLatestTaiwan73Delta": true,
+      "status": "awaiting-taiwan74-binary",
+      "action": "Scan the actual Taiwan 7.4 binary and verify function/virtual-table identity before changing the candidate signature."
+    },
+    {
+      "symbol": "AgentMutelist.Remove",
+      "path": "FFXIVClientStructs/FFXIV/Client/UI/Agent/AgentMutelist.cs",
+      "china73": "[MemberFunction(\"E8 ?? ?? ?? ?? 8B 54 24 50 48 8B CB E8 ?? ?? ?? ?? 48 8B 5C 24\")]\npublic partial bool Remove(ulong accountId);",
+      "taiwan73Initial": "[MemberFunction(\"40 53 56 57 B8 ?? ?? ?? ?? E8 ?? ?? ?? ?? 48 2B E0 48 8B 05 ?? ?? ?? ?? 48 33 C4 48 89 84 24 ?? ?? ?? ?? 48 89 AC 24\")]\npublic partial bool Remove(ulong accountId);",
+      "taiwan73Release": "[MemberFunction(\"E8 ?? ?? ?? ?? 8B 54 24 50 48 8B CF E8\")]\npublic partial bool Remove(ulong accountId, bool showInLog = true);",
+      "china74Candidate": "[MemberFunction(\"E8 ?? ?? ?? ?? 8B 54 24 50 48 8B CF E8\")]\npublic partial bool Remove(ulong accountId, bool showInLog = true);",
+      "retainedInLatestTaiwan73Delta": false,
+      "status": "superseded-by-shared-upstream-before-taiwan73-release",
+      "action": "Scan the actual Taiwan 7.4 binary and verify function/virtual-table identity before changing the candidate signature."
+    },
+    {
+      "symbol": "AtkResNode.SetRotationDegrees",
+      "path": "FFXIVClientStructs/FFXIV/Component/GUI/AtkResNode.cs",
+      "china73": "[MemberFunction(\"E8 ?? ?? ?? ?? EB ?? 8B 41\")]\npublic partial void SetRotationDegrees(float rotation);",
+      "taiwan73Initial": "[MemberFunction(\"48 85 C9 74 ?? 8B 91 ?? ?? ?? ?? 8B C2 F3 0F 59 0D\")]\npublic partial void SetRotationDegrees(float rotation);",
+      "taiwan73Release": "[MemberFunction(\"E8 ?? ?? ?? ?? 4D 8D 7E 28\")]\npublic partial void SetRotationDegrees(float rotation);",
+      "china74Candidate": "[MemberFunction(\"E8 ?? ?? ?? ?? 4D 8D 7E 28\")]\npublic partial void SetRotationDegrees(float rotation);",
+      "retainedInLatestTaiwan73Delta": false,
+      "status": "superseded-by-shared-upstream-before-taiwan73-release",
+      "action": "Scan the actual Taiwan 7.4 binary and verify function/virtual-table identity before changing the candidate signature."
+    }
+  ],
+  "migrationItems": [
+    {
+      "area": "game-language-and-serialization",
+      "status": "ported",
+      "paths": [
+        "Dalamud.Common/ClientLanguage.cs",
+        "Dalamud.Common/DalamudStartInfo.cs",
+        "Dalamud.Injector/Program.cs",
+        "Dalamud/Utility/ClientLanguageExtensions.cs",
+        "Dalamud.Boot/DalamudStartInfo.h",
+        "Dalamud.Boot/veh.cpp"
+      ],
+      "finding": "Use the API14 regional enum TraditionalChinese=7 and Lumina tc mapping. Legacy XIVTCLauncher CLI value 4 is translated at the injector boundary. Explicit Simplified Chinese survives crash recovery."
+    },
+    {
+      "area": "excel-language-selection",
+      "status": "ported-with-api14-behavior",
+      "paths": [
+        "Dalamud/Data/DataManager.cs",
+        "lib/Lumina/src/Lumina/Data/Language.cs",
+        "lib/Lumina/src/Lumina/Excel/ExcelModule.cs",
+        "Dalamud/Utility/Util.cs"
+      ],
+      "finding": "Taiwan73 removed hardcoded chs naming. Its Lumina snapshot also forced requested sheets to the configured default. API14 keeps tc filename mapping and the Taiwan default, while preserving explicit language requests in IDataManager. BNpcName now uses the client default."
+    },
+    {
+      "area": "display-localization-and-glyph-selection",
+      "status": "ported",
+      "paths": [
+        "Dalamud/Localization.cs",
+        "Dalamud/Configuration/Internal/DalamudConfiguration.cs",
+        "Dalamud/Dalamud.cs"
+      ],
+      "finding": "Taiwan tc/tw selects the tw asset and zh-Hant culture. The selected display language also drives glyph selection. Explicit user language overrides take precedence. Proton culture fallback is retained."
+    },
+    {
+      "area": "game-fonts",
+      "status": "equivalent-port",
+      "paths": [
+        "Dalamud/Interface/GameFonts/GameFontFamilyAndSize.cs",
+        "Dalamud/Interface/GameFonts/GameFontFamilyAndSizeAttribute.cs"
+      ],
+      "finding": "Taiwan73 replaced AXIS_12/14/18/36 font paths with tcaxis_120/140/180/360 and font_tc_{0}. API14 already performs these exact regional rewrites in the attribute using its Taiwan default."
+    },
+    {
+      "area": "sanitizer",
+      "status": "ported",
+      "paths": [
+        "Dalamud/Game/Text/Sanitizer/Sanitizer.cs"
+      ],
+      "finding": "Single-string and enumerable sanitizers both handle the Taiwan language; API14 regional enum aliases remain supported."
+    },
+    {
+      "area": "fallback-directories-runtime-and-safemode",
+      "status": "ported",
+      "paths": [
+        "Dalamud.Injector/Program.cs",
+        "lib/CoreCLR/boot.cpp",
+        "Dalamud/Plugin/Internal/PluginManager.cs",
+        "Dalamud/Interface/Internal/DalamudCommands.cs"
+      ],
+      "finding": "Port XIVLauncherTC fallback directories for injector configuration, runtime discovery, safe-mode marker and log opening. Explicit profile paths and DALAMUD_RUNTIME continue to take precedence."
+    },
+    {
+      "area": "duty-pop-notification",
+      "status": "ported",
+      "paths": [
+        "Dalamud/Game/Network/Internal/NetworkHandlers.cs"
+      ],
+      "finding": "Carry over the Taiwan73 duty-pop text and roulette fallback label."
+    },
+    {
+      "area": "plugin-repository-endpoints",
+      "status": "deferred-until-taiwan-api14-feed-is-confirmed",
+      "paths": [
+        "Dalamud/Plugin/Internal/Types/PluginRepository.cs",
+        "Dalamud/Configuration/Internal/DalamudConfiguration.cs"
+      ],
+      "finding": "Taiwan73 used yanmucorp/PluginDistD17. The candidate still has the CN branch repository defaults. Publishing an API14 Taiwan candidate requires confirming a feed with API14 manifests and deciding legacy installed-source migration. Existing empty test profiles disable preset repositories."
+    },
+    {
+      "area": "remaining-core-ui-copy-and-region-menus",
+      "status": "requires-followup-review",
+      "paths": [
+        "Dalamud/Interface/Internal/DalamudInterface.cs",
+        "Dalamud/Interface/Internal/PluginCategoryManager.cs",
+        "Dalamud/Interface/Internal/Windows/ChangelogWindow.cs",
+        "Dalamud/Interface/Internal/Windows/ConsoleWindow.cs",
+        "Dalamud/Interface/Internal/Windows/PluginInstaller/PluginInstallerWindow.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/SettingsWindow.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabAutoUpdate.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabExperimental.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabGeneral.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Tabs/SettingsTabLook.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Widgets/DevPluginsSettingsEntry.cs",
+        "Dalamud/Interface/Internal/Windows/Settings/Widgets/ProxySettingsEntry.cs"
+      ],
+      "finding": "The Taiwan73 diff contains literal Traditional Chinese translations and replacement of hardcoded CN text with localization keys. Enabling tw assets does not translate literal strings. Review these windows separately from API14 functional changes."
+    },
+    {
+      "area": "assert-policy",
+      "status": "already-matches-regional-release",
+      "paths": [
+        "Dalamud/Interface/Internal/Asserts/AssertHandler.cs",
+        "Dalamud/Interface/Internal/InterfaceManager.cs"
+      ],
+      "finding": "Taiwan73 suppressed assert UI. The candidate retains the regional assert policy."
+    },
+    {
+      "area": "build-and-framework-changes",
+      "status": "api14-baseline-retained",
+      "paths": [
+        "global.json",
+        "Directory.Build.targets",
+        ".github/workflows/api14-tw-build.yml"
+      ],
+      "finding": "API14 uses .NET10. The Taiwan73 .NET9 build settings are version-specific. Host assembly identities are pinned independently of client layouts."
+    }
+  ],
+  "lumina73Baselines": {
+    "china73": "d99a5cb3fc0dcd627c8b31f2b8cfed69d4fe1952",
+    "taiwan73": "2305d222f4a3d31c9b918ad026d709c9cb5f6d6a"
+  }
+}

@@ -289,14 +289,14 @@ internal unsafe class NetworkHandlers : IInternalDisposableService
 
             var cfcName = cfCondition.Value.Name.ToDalamudString();
             if (cfcName.Payloads.Count == 0)
-                cfcName = "Duty Roulette";
+                cfcName = "隨機任務";
 
             Task.Run(() =>
             {
                 if (this.configuration.DutyFinderChatMessage)
                 {
                     var b = new SeStringBuilder();
-                    b.Append("Duty pop: ");
+                    b.Append("副本匹配完成：");
                     b.Append(cfcName);
                     Service<ChatGui>.GetNullable()?.Print(b.Build());
                 }

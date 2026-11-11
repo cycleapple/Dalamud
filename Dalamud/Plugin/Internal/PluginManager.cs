@@ -98,7 +98,7 @@ internal class PluginManager : IInternalDisposableService
         try
         {
             var appdata = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
-            var safeModeFile = Path.Combine(appdata, "XIVLauncherCN", ".dalamud_safemode");
+            var safeModeFile = Path.Combine(appdata, "XIVLauncherTC", ".dalamud_safemode");
 
             if (File.Exists(safeModeFile))
             {
